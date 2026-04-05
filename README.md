@@ -22,7 +22,7 @@ Agent: "You're working on the API redesign. Last session you decided
 ## 30-Second Start
 
 ```bash
-git clone https://github.com/nicefacer/loom.git
+git clone https://github.com/sukbearai/loom.git
 cd loom
 bash plugin/install.sh          # detects your agent, generates config
 cd vault
@@ -125,7 +125,7 @@ Codex CLI users: say "start session", "capture this: ...", or "wrap up" in natur
 ## Inspired By
 
 - [llm-wiki](https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f) by Karpathy — the pattern
-- [obsidian-mind](https://github.com/nicefacer/obsidian-mind) — full-featured implementation for engineer performance tracking
+- [obsidian-mind](https://github.com/sukbearai/obsidian-mind) — full-featured implementation for engineer performance tracking
 
 ## License
 
