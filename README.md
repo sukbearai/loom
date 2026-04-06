@@ -109,6 +109,33 @@ The classify hook detects intent (decision, win, project update, query, ingest) 
 
 Claude Code uses `/skill-name`, Codex CLI uses `$skill-name`. Both read from their respective `.claude/skills/` and `.codex/skills/` directories.
 
+### Prompt Templates
+
+Copy-paste ready — replace `<>` with your content:
+
+**`/dump`**
+```
+/dump We decided to use <option A> over <option B> because <reason>
+/dump <project> is done. Key outcome: <what was achieved>
+/dump Pattern noticed: <description>
+/dump Remember: <anything you want the agent to recall next session>
+```
+
+**`/recall`**
+```
+/recall <keyword>
+/recall how did we decide on <topic>
+/recall <project> progress
+```
+
+**`/ingest`**
+```
+/ingest <URL>
+/ingest sources/<filename>.md
+```
+
+**`/wrap-up`** — no arguments needed, the agent scans the session automatically.
+
 ## Usage Scenarios
 
 See [docs/usage.md](docs/usage.md) — 7 real scenarios from first session to project completion, with exact commands and expected output.
