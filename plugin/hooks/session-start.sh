@@ -40,12 +40,12 @@ echo "### Recent Changes"
 COMMITS_48H=$(git log --oneline --since="48 hours ago" --no-merges 2>/dev/null | wc -l | tr -d ' ')
 if [ "$COMMITS_48H" -gt 0 ]; then
   echo "(last 48 hours)"
-  git log --oneline --since="48 hours ago" --no-merges 2>/dev/null | head -15
+  git log --oneline --since="48 hours ago" --no-merges 2>/dev/null | head -15 || true
 else
   COMMITS_7D=$(git log --oneline --since="7 days ago" --no-merges 2>/dev/null | wc -l | tr -d ' ')
   if [ "$COMMITS_7D" -gt 0 ]; then
     echo "(nothing in 48h — showing last 7 days)"
-    git log --oneline --since="7 days ago" --no-merges 2>/dev/null | head -15
+    git log --oneline --since="7 days ago" --no-merges 2>/dev/null | head -15 || true
   else
     echo "(nothing recent — showing last 5 commits)"
     git log --oneline -5 --no-merges 2>/dev/null || echo "(no git history)"
@@ -84,7 +84,7 @@ echo ""
 
 # Uncommitted changes — shows agent what's in-flight
 echo "### Uncommitted Changes"
-CHANGES=$(git status --short -- . 2>/dev/null | head -20)
+CHANGES=$(git status --short -- . 2>/dev/null | head -20 || true)
 if [ -n "$CHANGES" ]; then
   echo "$CHANGES"
 else
