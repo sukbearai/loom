@@ -37,6 +37,15 @@ fi
 
 echo ""
 
+# --- Copy hooks into vault (makes vault self-contained) ---
+
+HOOKS_DIR="$VAULT_DIR/.loom/hooks"
+mkdir -p "$HOOKS_DIR"
+cp "$REPO_DIR/plugin/hooks/"* "$HOOKS_DIR/"
+chmod +x "$HOOKS_DIR/"*.sh "$HOOKS_DIR/"*.py 2>/dev/null || true
+echo "[+] Hook scripts copied to vault/.loom/hooks/"
+echo ""
+
 # --- Setup functions ---
 
 setup_claude() {
@@ -45,7 +54,7 @@ setup_claude() {
   # Create .claude directory in vault
   mkdir -p "$VAULT_DIR/.claude/commands"
 
-  # Generate settings.json with hooks pointing to plugin/hooks/
+  # Generate settings.json with hooks pointing to .loom/hooks/ (vault-local)
   cat > "$VAULT_DIR/.claude/settings.json" << 'SETTINGS'
 {
   "hooks": {
@@ -55,7 +64,7 @@ setup_claude() {
         "hooks": [
           {
             "type": "command",
-            "command": "bash plugin/hooks/session-start.sh",
+            "command": "bash .loom/hooks/session-start.sh",
             "timeout": 30
           }
         ]
@@ -66,7 +75,7 @@ setup_claude() {
         "hooks": [
           {
             "type": "command",
-            "command": "python3 plugin/hooks/classify-message.py",
+            "command": "python3 .loom/hooks/classify-message.py",
             "timeout": 15
           }
         ]
@@ -78,7 +87,7 @@ setup_claude() {
         "hooks": [
           {
             "type": "command",
-            "command": "python3 plugin/hooks/validate-write.py",
+            "command": "python3 .loom/hooks/validate-write.py",
             "timeout": 15
           }
         ]
@@ -111,7 +120,7 @@ setup_codex() {
 
   mkdir -p "$VAULT_DIR/.codex"
 
-  # Generate hooks.json
+  # Generate hooks.json with hooks pointing to .loom/hooks/ (vault-local)
   cat > "$VAULT_DIR/.codex/hooks.json" << 'HOOKS'
 {
   "hooks": {
@@ -121,7 +130,7 @@ setup_codex() {
         "hooks": [
           {
             "type": "command",
-            "command": "bash plugin/hooks/session-start.sh",
+            "command": "bash .loom/hooks/session-start.sh",
             "timeout": 30
           }
         ]
@@ -132,7 +141,7 @@ setup_codex() {
         "hooks": [
           {
             "type": "command",
-            "command": "python3 plugin/hooks/classify-message.py",
+            "command": "python3 .loom/hooks/classify-message.py",
             "timeout": 15
           }
         ]
@@ -144,7 +153,7 @@ setup_codex() {
         "hooks": [
           {
             "type": "command",
-            "command": "python3 plugin/hooks/validate-write.py",
+            "command": "python3 .loom/hooks/validate-write.py",
             "timeout": 15
           }
         ]

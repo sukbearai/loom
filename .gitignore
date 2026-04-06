@@ -9,6 +9,7 @@ Thumbs.db
 # Agent generated configs (created by install.sh)
 vault/.claude/
 vault/.codex/
+vault/.loom/
 vault/CLAUDE.md
 vault/AGENTS.md
 
