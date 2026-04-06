@@ -6,12 +6,15 @@ Thumbs.db
 .obsidian/
 .trash/
 
-# Agent generated configs (created by install.sh)
-vault/.claude/
-vault/.codex/
-vault/.codex-mem/
-vault/CLAUDE.md
-vault/AGENTS.md
+# Agent generated configs — track the template, ignore user overrides
+# The vault ships with baseline configs; install.sh may regenerate them.
+vault/.claude/*
+!vault/.claude/settings.json
+!vault/.claude/commands/
+vault/.codex/*
+!vault/.codex/hooks.json
+vault/.codex-mem/*
+!vault/.codex-mem/hooks/
 
 # Thinking / scratchpad
 vault/thinking/session-logs/
