@@ -106,7 +106,7 @@ Codex CLI users: say "start session", "capture this: ...", or "wrap up" in natur
 
 1. **Data sovereignty** — your markdown, your git, your machine. No cloud lock-in.
 2. **Agent-agnostic** — hooks are the universal interface. One vault, multiple agents.
-3. **Minimal by default** — 3 hooks, ~80 lines of instructions. Add complexity only when needed.
+3. **Minimal by default** — 3 hooks, ~100 lines of instructions. Add complexity only when needed.
 4. **Graph-first** — folders group by purpose, [[wikilinks]] group by meaning. Links are the primary organization tool.
 5. **Future-proof** — if models get built-in memory, the vault still has value as auditable, portable, git-tracked local storage.
 
