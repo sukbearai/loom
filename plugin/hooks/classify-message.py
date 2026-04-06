@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Classify user messages and inject routing hints.
 
-Lightweight version: 3 core signals (DECISION, WIN, PROJECT UPDATE).
+Lightweight version: 5 core signals (DECISION, WIN, PROJECT UPDATE, QUERY, INGEST).
 Agent-agnostic — outputs hookSpecificOutput compatible with both
 Claude Code and Codex CLI.
 """
@@ -36,6 +36,23 @@ SIGNALS = [
             "project update", "sprint", "milestone",
             "shipped", "launched", "completed", "released", "deployed",
             "went live", "rolled out", "merged", "cut the release",
+        ],
+    },
+    {
+        "name": "QUERY",
+        "message": "QUERY detected — if the answer is substantial, consider offering to save it as a reference note in reference/",
+        "patterns": [
+            "what is", "how does", "why did", "compare", "analyze",
+            "explain the", "what's the difference", "summarize the",
+            "relationship between",
+        ],
+    },
+    {
+        "name": "INGEST",
+        "message": "INGEST detected — consider using /ingest to process the source into a wiki page",
+        "patterns": [
+            "ingest", "process this", "read this article",
+            "summarize this", "new source", "clip this", "web clip",
         ],
     },
 ]

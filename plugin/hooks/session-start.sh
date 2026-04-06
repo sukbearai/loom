@@ -37,6 +37,15 @@ echo "### Recent Changes (last 48h)"
 git log --oneline --since="48 hours ago" --no-merges 2>/dev/null | head -15 || echo "(no git history)"
 echo ""
 
+# Recent operations from log
+echo "### Recent Operations"
+if [ -f "log.md" ]; then
+  grep "^## \[" "log.md" | tail -5 || true
+else
+  echo "(no log.md)"
+fi
+echo ""
+
 # Active work
 echo "### Active Work"
 if [ -d "work/active" ]; then

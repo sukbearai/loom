@@ -24,6 +24,12 @@ All work notes and decisions link back here.
 |------|----------|--------|------|
 |      |          |        |      |
 
+## Reference
+
+_Saved answers and analyses from query writeback._
+
+-
+
 ## Open Questions
 
 -

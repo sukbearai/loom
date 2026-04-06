@@ -12,6 +12,7 @@ Persistent context retained across sessions. Each topic lives in its own note �
 - [[Key Decisions]] — decisions worth recalling
 - [[Patterns]] — recurring patterns discovered across work
 - [[North Star]] — living goals document
+- [[Log]] — chronological record of vault operations
 
 ## Recent Context
 

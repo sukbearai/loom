@@ -73,6 +73,7 @@ Three hooks power the loop:
 ```
 vault/
   Home.md                 Entry point — current focus, quick links
+  log.md                  Append-only operation log — grep-parseable
   brain/
     North Star.md         Goals and focus — read every session
     Memories.md           Memory index
@@ -84,9 +85,11 @@ vault/
     archive/              Completed work
   templates/              Note templates (Work Note, Decision Record, Thinking Note)
   thinking/               Scratchpad — promote findings, then delete
+  sources/                Raw source documents — immutable, LLM reads only
+  reference/              Saved answers and analyses from query writeback
 ```
 
-Six folders. Three note types. That's it.
+Eight folders. Five note types. That's it.
 
 ## Commands (Claude Code)
 
@@ -95,6 +98,7 @@ Six folders. Three note types. That's it.
 | `/standup` | Morning kickoff — loads context, reviews yesterday, suggests priorities |
 | `/dump` | Freeform capture — say anything, agent routes it to the right notes |
 | `/wrap-up` | End-of-session review — verify notes, update indexes, check links |
+| `/ingest` | Process a source document into wiki pages with cross-links |
 
 Codex CLI users: say "start session", "capture this: ...", or "wrap up" in natural language. The hooks handle the rest.
 

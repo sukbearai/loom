@@ -17,3 +17,5 @@ tags:
 - [[Memories]] — persistent context
 - [[Key Decisions]] — architectural and workflow decisions
 - [[Patterns]] — recurring patterns
+- [[Index#Reference|Reference Notes]] — saved answers and analyses
+- [[Log]] — operation history
