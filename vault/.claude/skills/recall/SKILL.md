@@ -1,5 +1,11 @@
 ---
-description: "On-demand memory retrieval — search the vault for a topic and synthesize what you know."
+name: recall
+description: "Search vault memory for a topic — finds relevant notes across brain, work, reference, and sources. Triggers: 'recall', 'what do I know about', 'search memory', 'find notes about', 'look up'."
+license: MIT
+metadata:
+  author: sukbearai
+  version: "1.0.0"
+  homepage: "https://github.com/sukbearai/codex-mem"
 ---
 
 Search the vault for information about the given topic.
