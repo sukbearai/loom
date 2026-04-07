@@ -174,6 +174,14 @@ npx @suwujs/codex-vault upgrade     # Upgrade hooks and skills (preserves vault 
 npx @suwujs/codex-vault uninstall   # Remove hooks and skills (preserves vault data)
 ```
 
+## Testing
+
+```bash
+npm test                # Full E2E test suite
+npm run test:cli        # CLI commands only (22 tests)
+npm run test:hooks      # Hook scripts only (33 tests)
+```
+
 ## Requirements
 
 - Git

@@ -154,6 +154,14 @@ npx @suwujs/codex-vault upgrade     # 升级 hooks 和 skills（保留 vault 数
 npx @suwujs/codex-vault uninstall   # 移除 hooks 和 skills（保留 vault 数据）
 ```
 
+## 测试
+
+```bash
+npm test                # 完整 E2E 测试
+npm run test:cli        # CLI 命令测试（22 个）
+npm run test:hooks      # Hook 脚本测试（33 个）
+```
+
 ## 配置
 
 | 配置项 | 文件 | 说明 |
