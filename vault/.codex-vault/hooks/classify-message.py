@@ -277,6 +277,15 @@ def main():
         json.dump(output, sys.stdout)
         sys.stdout.flush()
 
+        # Visible feedback to user terminal (stderr)
+        names = [s["name"] for s in SIGNALS if _match(s["patterns"], prompt.lower())]
+        if is_session_end(prompt):
+            names.append("SESSION END")
+        if names:
+            label = " + ".join(names)
+            icon = "🔄" if mode == "auto" else "💡"
+            print(f"  {icon} vault: {label} detected", file=sys.stderr)
+
     sys.exit(0)
 
 

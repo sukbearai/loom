@@ -103,6 +103,10 @@ def main():
         json.dump(output, sys.stdout)
         sys.stdout.flush()
 
+        # Visible feedback to user terminal (stderr)
+        count = len(warnings)
+        print(f"  ⚠️  vault: {count} warning(s) in {basename}", file=sys.stderr)
+
     sys.exit(0)
 
 
