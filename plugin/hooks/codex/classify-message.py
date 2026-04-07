@@ -85,9 +85,10 @@ def _match(patterns, text):
     return False
 
 
-def _find_vault_root():
+def _find_vault_root(cwd=None):
     """Find vault root from CWD — check for Home.md/brain/, then vault/ subdir."""
-    cwd = os.environ.get("CODEX_PROJECT_DIR", os.getcwd())
+    if cwd is None:
+        cwd = os.getcwd()
     if os.path.isfile(os.path.join(cwd, "Home.md")) or os.path.isdir(os.path.join(cwd, "brain")):
         return cwd
     vault_sub = os.path.join(cwd, "vault")
@@ -99,9 +100,9 @@ def _find_vault_root():
     return None
 
 
-def _read_mode():
+def _read_mode(cwd=None):
     """Read classify mode from vault config. Default: suggest."""
-    vault_root = _find_vault_root()
+    vault_root = _find_vault_root(cwd)
     if not vault_root:
         return "suggest"
     config_path = os.path.join(vault_root, ".codex-vault", "config.json")
@@ -219,11 +220,12 @@ def main():
     if not isinstance(prompt, str) or not prompt:
         sys.exit(0)
 
+    cwd = input_data.get("cwd", os.getcwd())
     signal_messages = []
     session_end_messages = []
 
     try:
-        mode = _read_mode()
+        mode = _read_mode(cwd)
 
         # Regular signal classification
         signals = classify(prompt, mode)
@@ -231,7 +233,7 @@ def main():
 
         # Session-end check (always suggest mode — never auto-execute wrap-up)
         if is_session_end(prompt):
-            vault_root = _find_vault_root()
+            vault_root = _find_vault_root(cwd)
             if vault_root:
                 integrity_warnings = _check_vault_integrity(vault_root)
                 if integrity_warnings:

@@ -101,14 +101,14 @@ Hook 驱动整个循环：
 |------|---------|--------|-------------|-----------|
 | **session-start** | Agent 启动 | 注入 North Star 目标、近期 git 变更、活跃项目、vault 文件清单 | SessionStart | SessionStart |
 | **classify-message** | 每条消息 | 检测决策、成果、项目更新 — 提示 agent 该归档到哪里 | UserPromptSubmit | UserPromptSubmit |
-| **validate-write** | 写 `.md` 后 | 检查 frontmatter 和 wikilinks — 在落盘前纠错 | PostToolUse (Write\|Edit) | 不支持（Codex 仅支持 Bash） |
+| **validate-write** | 写 `.md` 后 / 执行 Bash 后 | 检查 frontmatter 和 wikilinks（Claude）；检测命令失败（Codex） | PostToolUse (Write\|Edit) | PostToolUse (Bash) |
 
 ## 支持的 Agent
 
 | Agent | Hooks | Skills | 状态 |
 |-------|-------|--------|------|
 | Claude Code | `.claude/settings.json` 3 hooks | `/dump` `/recall` `/ingest` `/wrap-up` | 完整支持 |
-| Codex CLI | `.codex/hooks.json` 2 hooks | `$dump` `$recall` `$ingest` `$wrap-up` | 完整支持（PostToolUse 受 Codex 限制仅支持 Bash） |
+| Codex CLI | `.codex/hooks.json` 3 hooks | `$dump` `$recall` `$ingest` `$wrap-up` | 完整支持 |
 | 其他 | 写适配器（[指南](docs/adding-an-agent.md)） | 取决于 agent | 社区贡献 |
 
 ## Vault 结构

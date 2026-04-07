@@ -17,9 +17,10 @@ from datetime import datetime
 from pathlib import Path
 
 
-def _find_vault_root():
+def _find_vault_root(cwd=None):
     """Find vault root from CWD — check for Home.md/brain/, then vault/ subdir."""
-    cwd = os.environ.get("CODEX_PROJECT_DIR", os.getcwd())
+    if cwd is None:
+        cwd = os.getcwd()
     if os.path.isfile(os.path.join(cwd, "Home.md")) or os.path.isdir(os.path.join(cwd, "brain")):
         return cwd
     vault_sub = os.path.join(cwd, "vault")
@@ -343,7 +344,14 @@ def _build_banner(vault_dir):
 
 
 def main():
-    vault_dir = _find_vault_root()
+    # Read hook input first — Codex provides cwd via stdin JSON
+    try:
+        event = json.load(sys.stdin)
+    except Exception:
+        event = {}
+
+    cwd = event.get("cwd", os.getcwd())
+    vault_dir = _find_vault_root(cwd)
     if not vault_dir:
         output = {
             "hookSpecificOutput": {
@@ -353,12 +361,6 @@ def main():
         }
         sys.stdout.write(json.dumps(output) + "\n")
         sys.exit(0)
-
-    # Read hook input for session metadata
-    try:
-        event = json.load(sys.stdin)
-    except Exception:
-        event = {}
 
     context = _build_context(vault_dir)
 

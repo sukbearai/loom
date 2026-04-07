@@ -157,7 +157,7 @@ PYEOF
 # --- Helper: merge hooks into existing hooks.json (Codex CLI) ---
 # Codex CLI differences:
 #   - SessionStart matcher: "startup|resume" (no compact)
-#   - No PostToolUse hook (Codex only supports Bash matcher, not Write|Edit)
+#   - PostToolUse matcher: "Bash" (Codex only supports Bash, not Write|Edit)
 
 merge_codex_hooks_json() {
   local target_file="$1"
@@ -177,6 +177,10 @@ new_hooks = {
     }],
     "UserPromptSubmit": [{
         "hooks": [{"type": "command", "command": f"python3 {hooks_rel}/classify-message.py", "timeout": 15}]
+    }],
+    "PostToolUse": [{
+        "matcher": "Bash",
+        "hooks": [{"type": "command", "command": f"python3 {hooks_rel}/validate-write.py", "timeout": 15}]
     }],
 }
 
@@ -346,7 +350,7 @@ setup_codex() {
     mkdir -p "$VAULT_DIR/.codex"
 
     merge_codex_hooks_json "$VAULT_DIR/.codex/hooks.json" "$HOOKS_REL/codex"
-    echo "  [+] .codex/hooks.json (2 hooks)"
+    echo "  [+] .codex/hooks.json (3 hooks)"
 
     # Enable hooks feature flag
     enable_codex_hooks "$VAULT_DIR"
