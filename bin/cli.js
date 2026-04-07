@@ -7,7 +7,7 @@ const fs = require('fs');
 
 const PKG_ROOT = path.resolve(__dirname, '..');
 const INSTALL_SH = path.join(PKG_ROOT, 'plugin', 'install.sh');
-const VERSION = fs.readFileSync(path.join(PKG_ROOT, 'plugin', 'VERSION'), 'utf8').trim();
+const VERSION = JSON.parse(fs.readFileSync(path.join(PKG_ROOT, 'package.json'), 'utf8')).version;
 
 const args = process.argv.slice(2);
 const cmd = args[0] || 'init';
