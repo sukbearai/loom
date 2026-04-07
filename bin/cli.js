@@ -64,12 +64,19 @@ function assertBash() {
 function runInit() {
   assertBash();
 
-  // Check if already installed
+  // Check if already installed (including legacy codex-mem)
   const versionFile = path.join(process.cwd(), 'vault', '.codex-vault', 'version');
+  const legacyVersionFile = path.join(process.cwd(), 'vault', '.codex-mem', 'version');
   if (fs.existsSync(versionFile)) {
     const installed = fs.readFileSync(versionFile, 'utf8').trim();
     console.log(`codex-vault v${installed} is already installed in this directory.`);
-    console.log('To reinstall, remove vault/.codex-vault/version first.');
+    console.log('Run "codex-vault upgrade" to update, or remove vault/.codex-vault/version to reinstall.');
+    return;
+  }
+  if (fs.existsSync(legacyVersionFile)) {
+    const installed = fs.readFileSync(legacyVersionFile, 'utf8').trim();
+    console.log(`Legacy codex-mem v${installed} detected.`);
+    console.log('Run "codex-vault uninstall" first, then "codex-vault init".');
     return;
   }
 
@@ -98,11 +105,17 @@ function runInit() {
 function cmdUpgrade() {
   assertBash();
 
-  // Check if installed
+  // Check if installed (including legacy codex-mem)
   const versionFile = path.join(process.cwd(), 'vault', '.codex-vault', 'version');
-  if (!fs.existsSync(versionFile)) {
+  const legacyVersionFile = path.join(process.cwd(), 'vault', '.codex-mem', 'version');
+  if (!fs.existsSync(versionFile) && !fs.existsSync(legacyVersionFile)) {
     console.error('codex-vault is not installed in this directory.');
     console.error('Run "codex-vault init" first.');
+    process.exit(1);
+  }
+  if (!fs.existsSync(versionFile) && fs.existsSync(legacyVersionFile)) {
+    console.error('Legacy codex-mem installation detected.');
+    console.error('Run "codex-vault uninstall" first, then "codex-vault init".');
     process.exit(1);
   }
 
