@@ -6,8 +6,9 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash .codex-vault/hooks/session-start.sh",
-            "timeout": 30
+            "command": "python3 .codex-vault/hooks/session-start.py",
+            "timeout": 30,
+            "statusMessage": "📚 Codex-Vault loading..."
           }
         ]
       }

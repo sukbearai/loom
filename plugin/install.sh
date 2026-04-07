@@ -113,7 +113,7 @@ hooks_rel = os.environ["CVAULT_HOOKS_REL"]
 new_hooks = {
     "SessionStart": [{
         "matcher": "startup|resume|compact",
-        "hooks": [{"type": "command", "command": f"bash {hooks_rel}/session-start.sh", "timeout": 30}]
+        "hooks": [{"type": "command", "command": f"python3 {hooks_rel}/session-start.py", "timeout": 30}]
     }],
     "UserPromptSubmit": [{
         "hooks": [{"type": "command", "command": f"python3 {hooks_rel}/classify-message.py", "timeout": 15}]
