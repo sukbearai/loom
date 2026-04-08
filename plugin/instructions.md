@@ -58,7 +58,7 @@ The SessionStart hook injects: North Star goals, schema (tag taxonomy + page thr
 ### Work
 
 1. The classify hook detects intent and suggests skills — **do not auto-execute**. Suggest the skill to the user and let them decide.
-2. Available skills: `/dump`, `/recall`, `/ingest`, `/wrap-up`
+2. Available skills: `/dump`, `/recall`, `/ingest`, `/lint`, `/wrap-up`
 3. Search before creating — check if a related note exists (use `/recall <topic>` for targeted vault search)
 4. Update `work/Index.md` if a new note was created
 

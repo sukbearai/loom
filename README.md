@@ -75,8 +75,8 @@ Hooks power the loop:
 
 | Agent | Hooks | Skills | Status |
 |-------|-------|--------|--------|
-| Claude Code | 3 hooks via `.claude/settings.json` | `/dump` `/recall` `/ingest` `/wrap-up` | Full support |
-| Codex CLI | 3 hooks via `.codex/hooks.json` | `$dump` `$recall` `$ingest` `$wrap-up` | Full support |
+| Claude Code | 3 hooks via `.claude/settings.json` | `/dump` `/recall` `/ingest` `/wrap-up` `/lint` | Full support |
+| Codex CLI | 3 hooks via `.codex/hooks.json` | `$dump` `$recall` `$ingest` `$wrap-up` `$lint` | Full support |
 | Other | Write an adapter ([docs/adding-an-agent.md](docs/adding-an-agent.md)) | Depends on agent | Community |
 
 ## Vault Structure
@@ -84,6 +84,7 @@ Hooks power the loop:
 ```
 vault/
   Home.md                 Entry point — current focus, quick links
+  SCHEMA.md               Domain scope, tag taxonomy, page thresholds
   log.md                  Append-only operation log — grep-parseable
   brain/
     North Star.md         Goals and focus — read every session
@@ -100,7 +101,7 @@ vault/
   reference/              Saved answers and analyses from query writeback
 ```
 
-Eight folders. Five note types. That's it.
+Eight folders. One schema. Five note types. That's it.
 
 ## Skills
 
@@ -112,6 +113,7 @@ User-invoked skills — the agent suggests them, but only executes when you expl
 | `/wrap-up` | End-of-session review — verify notes, update indexes, check links |
 | `/ingest` | Process a source document into wiki pages with cross-links |
 | `/recall` | On-demand memory retrieval — search the vault for a topic and synthesize |
+| `/lint` | Vault health audit — 13 checks for broken links, orphans, stale content, tag drift, and more |
 
 The classify hook detects intent (decision, win, project update, query, ingest) and suggests the right skill. By default, you decide whether to run it (**suggest mode**). Set `{"classify_mode": "auto"}` in `vault/.codex-vault/config.json` to have the agent execute skills automatically (**auto mode**).
 
@@ -144,9 +146,26 @@ Copy-paste ready — replace `<>` with your content:
 
 **`/wrap-up`** — no arguments needed, the agent scans the session automatically.
 
+**`/lint`** — no arguments needed, runs a full vault health audit.
+
 ## Usage Scenarios
 
 See [docs/usage.md](docs/usage.md) — 7 real scenarios from first session to project completion, with exact commands and expected output.
+
+## What's New in v0.8.0
+
+- **`/lint` skill** — 13-check vault health audit: broken links, orphan pages, index completeness, frontmatter validation, stale content, oversized pages, tag audit, log check, index bloat, log rotation, split suggestions, archive integrity, topic map
+- **`SCHEMA.md`** — domain scope definition, tag taxonomy (declare-before-use), page thresholds (create/update/split/archive), frontmatter requirements
+- **Contradiction tracking** — `contradictions` frontmatter field for bidirectional conflict marking; `/ingest` auto-detects contradictions with existing vault content
+- **Batch ingest** — `/ingest` supports multiple sources at once with cross-source deduplication, single search pass, and consolidated index updates
+- **Query writeback logic** — `/recall` uses a 4-criteria save / 3-criteria skip decision matrix; `synthesized_from` field tracks source pages
+- **Obsidian integration guide** — [docs/obsidian.md](docs/obsidian.md) with Dataview queries, Graph View tips, and recommended settings
+- **Pre-read protocol** — all 5 skills start with Step 0 context check (read `work/Index.md` + `SCHEMA.md`)
+- **New frontmatter fields** — `type` (work/decision/source-summary/reference/thinking), `sources` (vault paths to source docs), `synthesized_from` (for reference notes)
+- **Enhanced hooks** — session-start injects SCHEMA context (tag taxonomy + page thresholds); validate-write checks tag whitelist and type field
+- **`/wrap-up` enhancements** — archive with backlink migration, lint recommendation after 3+ note sessions
+- **11 Pitfalls checklist** — common anti-patterns to avoid (in `plugin/instructions.md` and `vault/CLAUDE.md`)
+- **5 template overhauls** — all templates include content structure guidance and new frontmatter fields
 
 ## Design Principles
 
