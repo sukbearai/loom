@@ -1,6 +1,6 @@
 {
   "name": "@suwujs/codex-vault",
-  "version": "0.8.0",
+  "version": "0.8.1",
   "description": "Persistent knowledge vault for LLM agents (Claude Code, Codex CLI)",
   "license": "MIT",
   "repository": {
