@@ -211,13 +211,25 @@ npx @suwujs/codex-vault doctor
 # Step 2: auto-fix
 npx @suwujs/codex-vault doctor --fix
 
-# Step 3: commit the cleanup
+# Step 3: commit the cleanup (includes both .gitignore and untracked file removals)
 git add .gitignore && git commit -m "chore: gitignore agent configs to avoid conflicts"
 ```
 
-`doctor --fix` will: add missing `.gitignore` entries, untrack committed agent files (`git rm --cached`), migrate legacy `vault/` → `.vault/`, rename `.codex-mem/` → `.codex-vault/`, and remove stale configs. No upgrade needed — `npx` always runs the latest version.
+What `doctor --fix` does:
 
-After fixing, each team member runs `npx @suwujs/codex-vault init` to regenerate their own local agent configs.
+| Check | Issue | Fix |
+|-------|-------|-----|
+| gitignore | `.vault/` `.claude/` `.codex/` not in `.gitignore` | Append entries |
+| tracked files | Agent files already committed to git | `git rm --cached` (removes from index, keeps local files) |
+| vault migration | Legacy `vault/` should be `.vault/` | Rename + clean stale configs |
+| codex-mem rename | Old `.codex-mem/` directory | Rename to `.codex-vault/` |
+| stale configs | `.claude/` `.codex/` inside `.vault/` | Remove (should be at project root) |
+| conflict markers | `<<<<<<<` in config files | Reports for manual resolution |
+| broken JSON | Parse errors in settings/hooks | Reports, suggests `init` to regenerate |
+
+No upgrade needed — `npx` always runs the latest version.
+
+After fixing, each team member runs `npx @suwujs/codex-vault init` to get their own local agent configs.
 
 ## Testing
 

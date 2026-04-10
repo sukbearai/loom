@@ -195,11 +195,23 @@ npx @suwujs/codex-vault doctor
 # 第 2 步：自动修复
 npx @suwujs/codex-vault doctor --fix
 
-# 第 3 步：提交清理结果
+# 第 3 步：提交清理结果（包含 .gitignore 和取消追踪的文件删除）
 git add .gitignore && git commit -m "chore: gitignore agent configs to avoid conflicts"
 ```
 
-`doctor --fix` 会：补全 `.gitignore` 条目、取消追踪已提交的 agent 文件（`git rm --cached`）、迁移 `vault/` → `.vault/`、重命名 `.codex-mem/` → `.codex-vault/`、清理残留配置。不需要先 upgrade — `npx` 会自动使用最新版本。
+`doctor --fix` 做什么：
+
+| 检查项 | 问题 | 修复方式 |
+|--------|------|---------|
+| gitignore | `.vault/` `.claude/` `.codex/` 不在 `.gitignore` 中 | 追加条目 |
+| 已追踪文件 | agent 文件已提交到 git | `git rm --cached`（从索引移除，本地文件保留） |
+| vault 迁移 | 旧版 `vault/` 应为 `.vault/` | 重命名 + 清理残留配置 |
+| codex-mem 重命名 | 旧版 `.codex-mem/` 目录 | 重命名为 `.codex-vault/` |
+| 残留配置 | `.vault/` 内部有 `.claude/` `.codex/` | 删除（应在项目根目录） |
+| 冲突标记 | 配置文件中有 `<<<<<<<` | 报告，需手动解决 |
+| JSON 损坏 | settings/hooks 解析错误 | 报告，建议重新 `init` |
+
+不需要先 upgrade — `npx` 会自动使用最新版本。
 
 修复后，团队每位成员各自运行 `npx @suwujs/codex-vault init` 重新生成本地 agent 配置即可。
 
