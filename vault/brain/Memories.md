@@ -1,4 +1,5 @@
 ---
+date: "{{date}}"
 description: "Index of memory topics — decisions, patterns, context retained across sessions"
 tags:
   - brain

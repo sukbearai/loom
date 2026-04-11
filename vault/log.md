@@ -1,4 +1,5 @@
 ---
+date: "{{date}}"
 description: "Chronological log of vault operations — ingests, queries, session starts, maintenance"
 tags:
   - index

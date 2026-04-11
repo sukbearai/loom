@@ -1,4 +1,5 @@
 ---
+date: "{{date}}"
 description: "Living document of goals, focus areas, and aspirations — read at session start"
 tags:
   - brain

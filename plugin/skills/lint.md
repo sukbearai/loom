@@ -30,8 +30,8 @@ Grep all `.md` files for `[[...]]` wikilinks. For each unique link target:
 Using the same wikilink scan from Check 1, build an inbound-link map (which files are linked TO).
 
 A page is orphan if it has **zero inbound links**. Exclude these from orphan detection:
-- `Home.md`, `work/Index.md`, `SCHEMA.md`, `log.md`
-- Everything under `templates/`
+- `Home.md`, `work/Index.md`, `SCHEMA.md`, `log.md`, `CLAUDE.md`, `AGENTS.md`
+- Everything under `templates/` or `sources/`
 
 ### Check 3 — Index Completeness (severity: yellow)
 
@@ -43,7 +43,7 @@ Compare against actual files in `work/active/` and `work/archive/`:
 
 ### Check 4 — Frontmatter Validation (severity: yellow)
 
-For each `.md` file (excluding `templates/`, `Home.md`, `log.md`, `SCHEMA.md`):
+For each `.md` file (excluding `templates/`, `sources/`, `Home.md`, `log.md`, `SCHEMA.md`, `CLAUDE.md`, `AGENTS.md`):
 - Read the first 10 lines.
 - Check for YAML frontmatter delimited by `---`.
 - Verify that `date`, `tags`, and `description` fields are present and non-empty.

@@ -1,4 +1,5 @@
 ---
+date: "{{date}}"
 description: "Decisions worth recalling across sessions — each links to its source work note"
 tags:
   - brain

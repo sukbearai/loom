@@ -23,12 +23,16 @@ General knowledge management
 
 <!-- All available tags are declared here. New tags must be added to this list first. -->
 
+- brain — persistent memory files in brain/
+- index — navigation and index pages
 - meta — vault system files
 - decision — decision records
 - pattern — discovered regularities
 - source-summary — source material summaries
 - project — project-related notes
 - reference — reference materials
+- work-note — work notes and project logs
+- thinking — drafts and temporary ideas
 
 ## Page Thresholds
 

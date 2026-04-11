@@ -1,4 +1,5 @@
 ---
+date: "{{date}}"
 description: "Vault entry point — current focus and quick navigation"
 tags:
   - index

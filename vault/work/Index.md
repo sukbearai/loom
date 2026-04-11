@@ -1,4 +1,5 @@
 ---
+date: "{{date}}"
 description: "Central map of all work notes — active projects, completed work, decisions log"
 tags:
   - index
