@@ -220,6 +220,15 @@ npm run test:cli        # CLI 命令测试（22 个）
 npm run test:hooks      # Hook 脚本测试（33 个）
 ```
 
+### 发布
+
+发包由 GitHub Actions 处理。先把 npm automation token 配成仓库 secret `NPM_TOKEN`，更新 `package.json` 版本号，然后推送匹配的版本 tag：
+
+```bash
+git tag v0.9.9
+git push origin v0.9.9
+```
+
 ## 配置
 
 | 配置项 | 文件 | 说明 |

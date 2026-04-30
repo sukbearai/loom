@@ -7,6 +7,9 @@
     "type": "git",
     "url": "git+https://github.com/sukbearai/codex-vault.git"
   },
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "test": "bash tests/test_e2e.sh",
     "test:cli": "bash tests/test_cli.sh",
