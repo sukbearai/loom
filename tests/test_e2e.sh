@@ -796,12 +796,17 @@ else
   fail "cli: upgrade migration data" "data not preserved"
 fi
 
-# 10h. uninstall
-CLI_OUT=$(node "$CLI" uninstall 2>&1)
-if echo "$CLI_OUT" | grep -q "has been uninstalled" && [ ! -d "$CLI_DIR/.vault" ]; then
-  pass "cli: uninstall removes .vault/"
+# 10h. uninstall — without --force the CLI must refuse in non-TTY mode
+if ! node "$CLI" uninstall </dev/null >/dev/null 2>&1; then
+  pass "cli: uninstall without --force refuses in non-TTY"
 else
-  fail "cli: uninstall" "cleanup incomplete"
+  fail "cli: uninstall without --force" "should refuse without TTY"
+fi
+CLI_OUT=$(node "$CLI" uninstall --force 2>&1)
+if echo "$CLI_OUT" | grep -q "has been uninstalled" && [ ! -d "$CLI_DIR/.vault" ]; then
+  pass "cli: uninstall --force removes .vault/"
+else
+  fail "cli: uninstall --force" "cleanup incomplete"
 fi
 
 # 10i. uninstall again (already uninstalled)
@@ -829,7 +834,7 @@ else
 fi
 
 # 10l. uninstall cleans legacy codex-mem
-CLI_OUT=$(node "$CLI" uninstall 2>&1)
+CLI_OUT=$(node "$CLI" uninstall --force 2>&1)
 if echo "$CLI_OUT" | grep -q "uninstalled" && [ ! -d "$CLI_DIR/.vault" ]; then
   pass "cli: uninstall removes legacy .codex-mem/"
 else

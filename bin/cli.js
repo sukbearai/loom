@@ -32,7 +32,7 @@ switch (cmd) {
     break;
 
   case 'uninstall':
-    cmdUninstall();
+    cmdUninstall(args.slice(1));
     break;
 
   case 'doctor':
@@ -52,7 +52,10 @@ Usage:
   codex-vault init          Install vault into current directory (default)
   codex-vault upgrade       Upgrade existing vault to latest version
   codex-vault uninstall     Remove vault and all integration files
+                              Pass --force / -y to skip the confirmation prompt
+                              (required when stdin is not a TTY, e.g. CI/scripts)
   codex-vault doctor        Diagnose and fix git conflicts from agent configs
+                              Pass --fix to apply fixes automatically
   codex-vault -v, --version Print version
   codex-vault -h, --help    Print this help`);
 }
@@ -64,6 +67,21 @@ function assertBash() {
     console.error('On Windows, please install Git Bash or WSL.');
     process.exit(1);
   }
+}
+
+// Minimal synchronous stdin prompt. Returns the trimmed answer.
+// Caller is responsible for ensuring stdin is a TTY.
+function promptSync(question) {
+  process.stdout.write(question);
+  const buf = Buffer.alloc(1024);
+  let n;
+  try {
+    n = fs.readSync(0, buf, 0, buf.length, null);
+  } catch (e) {
+    // EAGAIN on some platforms when stdin is not ready — treat as empty
+    return '';
+  }
+  return buf.slice(0, n).toString('utf8').trim();
 }
 
 function findVersionFile() {
@@ -454,6 +472,8 @@ function cmdDoctor() {
   }
 
   // ── Auto-commit fixes ──
+  let commitFailed = false;
+  let commitError = '';
   if (fix && fixed > 0) {
     // Stage .gitignore (may have been created/modified)
     // git rm --cached changes are already staged
@@ -471,11 +491,17 @@ function cmdDoctor() {
       console.log('\n  [*] Changes committed automatically');
     } else {
       const stderr = (commitResult.stderr || '').trim();
-      if (stderr.includes('nothing to commit')) {
+      const stdout = (commitResult.stdout || '').trim();
+      // "nothing to commit" can land in either stream depending on git version
+      const combined = (stderr + '\n' + stdout).toLowerCase();
+      if (combined.includes('nothing to commit')) {
         // No actual staged changes — fine
       } else {
-        console.log(`\n  [!] Auto-commit failed: ${stderr}`);
-        console.log('      Run manually: git add .gitignore && git commit -m "chore: fix agent config git issues"');
+        commitFailed = true;
+        commitError = stderr || stdout || `exit ${commitResult.status}`;
+        console.log(`\n  [!] Auto-commit failed: ${commitError}`);
+        console.log('      Working-tree fixes are staged; commit them manually:');
+        console.log('      git commit -m "chore: fix agent config git issues"');
       }
     }
   }
@@ -488,6 +514,10 @@ function cmdDoctor() {
     console.log(`Found ${issues} issue(s). Run "codex-vault doctor --fix" to auto-fix.`);
   } else {
     const remaining = issues - fixed;
+    if (commitFailed) {
+      console.log(`Fixed ${fixed}/${issues} issue(s) but auto-commit failed — see above.`);
+      process.exit(1);
+    }
     console.log(`Fixed ${fixed}/${issues} issue(s).` +
       (remaining > 0 ? ` ${remaining} need manual resolution.` : ''));
   }
@@ -497,10 +527,13 @@ function cmdDoctor() {
 // uninstall
 // ---------------------------------------------------------------------------
 
-function cmdUninstall() {
+function cmdUninstall(extraArgs = []) {
   const cwd = process.cwd();
   const versionFile = findVersionFile();
   const legacyVersionFile = findLegacyVersionFile();
+  const force = extraArgs.includes('--force')
+    || extraArgs.includes('-y')
+    || extraArgs.includes('--yes');
 
   // 1. Check installation
   if (!versionFile && !legacyVersionFile) {
@@ -511,35 +544,56 @@ function cmdUninstall() {
 
   const activeVersionFile = versionFile || legacyVersionFile;
   const installedVersion = fs.readFileSync(activeVersionFile, 'utf8').trim();
-  console.log(`Uninstalling codex-vault v${installedVersion}...`);
 
-  // 2. Remove vault directories (.vault and/or vault)
-  for (const dir of ['.vault', 'vault']) {
-    const vaultDir = path.join(cwd, dir);
-    if (fs.existsSync(vaultDir)) {
-      fs.rmSync(vaultDir, { recursive: true, force: true });
-      console.log(`  [x] Removed ${dir}/ (all data deleted)`);
+  // 2. Confirm before deleting any vault data — uninstall is destructive
+  // and irreversible (notes, brain/, work/active/ all wiped).
+  const dirsToRemove = ['.vault', 'vault']
+    .filter((d) => fs.existsSync(path.join(cwd, d)));
+
+  if (dirsToRemove.length > 0 && !force) {
+    if (!process.stdin.isTTY) {
+      console.error(`Refusing to uninstall codex-vault v${installedVersion}: stdin is not a TTY.`);
+      console.error(`This would permanently delete: ${dirsToRemove.map((d) => d + '/').join(', ')}`);
+      console.error('Re-run with --force (or -y) to confirm.');
+      process.exit(1);
+    }
+    console.log(`About to uninstall codex-vault v${installedVersion}.`);
+    console.log(`This will permanently delete: ${dirsToRemove.map((d) => d + '/').join(', ')}`);
+    console.log('All notes, brain/, work/active/, and reference/ contents will be lost.');
+    const ans = promptSync('Type "yes" to confirm: ').toLowerCase();
+    if (ans !== 'yes') {
+      console.log('Cancelled. Nothing was removed.');
+      process.exit(1);
     }
   }
 
-  // 3. Clean .claude/settings.json
+  console.log(`Uninstalling codex-vault v${installedVersion}...`);
+
+  // 3. Remove vault directories (.vault and/or vault)
+  for (const dir of dirsToRemove) {
+    const vaultDir = path.join(cwd, dir);
+    fs.rmSync(vaultDir, { recursive: true, force: true });
+    console.log(`  [x] Removed ${dir}/ (all data deleted)`);
+  }
+
+  // 4. Clean .claude/settings.json
   cleanHooksJson(path.join(cwd, '.claude', 'settings.json'), '.claude/settings.json');
 
-  // 4. Clean .codex/hooks.json
+  // 5. Clean .codex/hooks.json
   cleanHooksJson(path.join(cwd, '.codex', 'hooks.json'), '.codex/hooks.json');
 
-  // 5. Clean .codex/config.toml
+  // 6. Clean .codex/config.toml
   cleanCodexConfigToml(cwd);
 
-  // 6. Remove skills
+  // 7. Remove skills
   const SKILL_NAMES = ['dump', 'ingest', 'lint', 'recall', 'wrap-up'];
   removeSkills(path.join(cwd, '.claude'), '.claude', SKILL_NAMES);
   removeSkills(path.join(cwd, '.codex'), '.codex', SKILL_NAMES);
 
-  // 7. Clean CLAUDE.md
+  // 8. Clean CLAUDE.md
   cleanInstructionFile(path.join(cwd, 'CLAUDE.md'), 'CLAUDE.md');
 
-  // 8. AGENTS.md — leave untouched (may contain user's own agent instructions)
+  // 9. AGENTS.md — leave untouched (may contain user's own agent instructions)
 
   // Summary
   console.log('\ncodex-vault has been uninstalled.');

@@ -175,11 +175,17 @@ fi
 
 # --- Uninstall ---
 echo "--- uninstall ---"
-OUT=$(node "$CLI" uninstall 2>&1)
-if echo "$OUT" | grep -q "has been uninstalled"; then
-  pass "uninstall succeeds"
+# Without --force, refuses to delete in non-TTY mode (exits non-zero)
+if ! node "$CLI" uninstall </dev/null >/dev/null 2>&1; then
+  pass "uninstall without --force refuses in non-TTY"
 else
-  fail "uninstall" "$OUT"
+  fail "uninstall without --force" "should refuse without TTY"
+fi
+OUT=$(node "$CLI" uninstall --force 2>&1)
+if echo "$OUT" | grep -q "has been uninstalled"; then
+  pass "uninstall --force succeeds"
+else
+  fail "uninstall --force" "$OUT"
 fi
 
 if [ ! -d "$DIR/.vault" ]; then
@@ -213,7 +219,7 @@ else
   fail "upgrade legacy" "should reject"
 fi
 
-OUT=$(node "$CLI" uninstall 2>&1)
+OUT=$(node "$CLI" uninstall --force 2>&1)
 if [ ! -d "$DIR/.vault/.codex-mem" ]; then
   pass "uninstall removes legacy .codex-mem/"
 else
