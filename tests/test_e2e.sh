@@ -19,6 +19,10 @@ NC='\033[0m'
 
 pass() { ((PASS++)); echo -e "  ${GREEN}PASS${NC} $1"; }
 fail() { ((FAIL++)); ERRORS+=("$1: $2"); echo -e "  ${RED}FAIL${NC} $1 — $2"; }
+configure_git_user() {
+  git config user.email "codex-vault-tests@example.com"
+  git config user.name "Codex Vault Tests"
+}
 
 echo "=== Codex-Vault E2E Tests ==="
 echo "Repo:     $REPO_DIR"
@@ -32,7 +36,7 @@ echo "--- 1. Install ---"
 # Copy repo to test dir (simulate git clone)
 cp -r "$REPO_DIR"/{plugin,vault,docs,README.md,LICENSE,.gitignore} "$TEST_DIR/"
 cd "$TEST_DIR"
-git init -q && git add -A && git commit -q -m "init"
+git init -q && configure_git_user && git add -A && git commit -q -m "init"
 
 # Run installer
 OUTPUT=$(bash plugin/install.sh 2>&1)
@@ -406,6 +410,7 @@ echo "--- 7. Integrated Mode Install ---"
 INT_DIR=$(mktemp -d)
 cd "$INT_DIR"
 git init -q
+configure_git_user
 
 # Pre-existing user config
 mkdir -p .claude
@@ -738,6 +743,7 @@ fi
 CLI_DIR=$(mktemp -d)
 cd "$CLI_DIR"
 git init -q
+configure_git_user
 CLI_OUT=$(node "$CLI" init 2>&1)
 if echo "$CLI_OUT" | grep -q "installed successfully" && [ -f "$CLI_DIR/.vault/.codex-vault/version" ]; then
   pass "cli: init creates .vault and writes version file"

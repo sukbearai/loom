@@ -16,6 +16,10 @@ NC='\033[0m'
 
 pass() { ((PASS++)); echo -e "  ${GREEN}PASS${NC} $1"; }
 fail() { ((FAIL++)); ERRORS+=("$1: $2"); echo -e "  ${RED}FAIL${NC} $1 — $2"; }
+configure_git_user() {
+  git config user.email "codex-vault-tests@example.com"
+  git config user.name "Codex Vault Tests"
+}
 
 echo "=== CLI Tests ==="
 echo ""
@@ -73,6 +77,7 @@ fi
 echo "--- init ---"
 DIR=$(mktemp -d)
 cd "$DIR" && git init -q
+configure_git_user
 
 OUT=$(node "$CLI" init 2>&1)
 if echo "$OUT" | grep -q "installed successfully"; then
