@@ -20,6 +20,18 @@ configure_git_user() {
   git config user.email "codex-vault-tests@example.com"
   git config user.name "Codex Vault Tests"
 }
+install_fake_agents() {
+  local bin_dir="$1"
+  mkdir -p "$bin_dir"
+  printf '#!/bin/sh\nexit 0\n' > "$bin_dir/claude"
+  printf '#!/bin/sh\nexit 0\n' > "$bin_dir/codex"
+  chmod +x "$bin_dir/claude" "$bin_dir/codex"
+}
+
+TEST_ROOT=$(mktemp -d)
+FAKE_BIN="$TEST_ROOT/fake-bin"
+install_fake_agents "$FAKE_BIN"
+export PATH="$FAKE_BIN:$PATH"
 
 echo "=== CLI Tests ==="
 echo ""
