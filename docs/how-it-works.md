@@ -60,7 +60,7 @@ For Claude Code note validation, it checks:
 
 If something's missing, the agent gets a warning and fixes it.
 
-For Codex CLI Bash validation, it blocks hard failures such as missing commands, permission errors, missing paths, and non-zero commands with useful output that should be reviewed before retrying.
+For Codex CLI Bash validation, it blocks hard setup failures such as missing commands and permission errors. Ordinary command failures, including test failures and missing input files, stay in the Bash output for the agent to review without an extra hook block.
 
 ## The Vault
 

@@ -29,7 +29,7 @@ If a vault has no `SCHEMA.md`, all schema-related features are skipped (backward
 All available tags are declared in `SCHEMA.md` under `## Tag Taxonomy`. Rules:
 
 - **Declare before use**: new tags must be added to `SCHEMA.md` before being used in a note's frontmatter
-- **Validation**: Claude validate-write warns when a note uses a tag not in the taxonomy (warning only — does not block writes). Codex validate-write detects Bash command failures.
+- **Validation**: Claude validate-write warns when a note uses a tag not in the taxonomy (warning only — does not block writes). Codex validate-write detects hard Bash setup/permission failures.
 - **Format**: each tag is a line `- tagname — description` under the `## Tag Taxonomy` heading
 
 ### Page Thresholds

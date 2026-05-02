@@ -71,7 +71,7 @@ Hooks power the loop:
 |------|------|------|-------------|-----------|
 | **session-start** | Agent starts | Injects North Star goals, recent git changes, active work, vault file listing | SessionStart | SessionStart |
 | **classify-message** | Every message | Detects decisions, wins, project updates — hints the agent where to file them | UserPromptSubmit | UserPromptSubmit |
-| **validate-write** | After writing `.md` / running Bash | Checks frontmatter and wikilinks (Claude); detects command failures (Codex) | PostToolUse (Write\|Edit) | PostToolUse (Bash) |
+| **validate-write** | After writing `.md` / running Bash | Checks frontmatter and wikilinks (Claude); detects hard setup/permission failures (Codex) | PostToolUse (Write\|Edit) | PostToolUse (Bash) |
 
 ## Supported Agents
 
@@ -166,7 +166,7 @@ See [docs/usage.md](docs/usage.md) — 7 real scenarios from first session to pr
 - **Obsidian integration guide** — [docs/obsidian.md](docs/obsidian.md) with Dataview queries, Graph View tips, and recommended settings
 - **Pre-read protocol** — all 5 skills start with Step 0 context check (read `work/Index.md` + `SCHEMA.md`)
 - **New frontmatter fields** — `type` (work/decision/source-summary/reference/thinking), `sources` (vault paths to source docs), `synthesized_from` (for reference notes)
-- **Enhanced hooks** — session-start injects SCHEMA context (tag taxonomy + page thresholds); Claude validate-write checks tag whitelist and type field; Codex validate-write detects Bash command failures
+- **Enhanced hooks** — session-start injects SCHEMA context (tag taxonomy + page thresholds); Claude validate-write checks tag whitelist and type field; Codex validate-write detects hard Bash setup/permission failures
 - **`/wrap-up` enhancements** — archive with backlink migration, lint recommendation after 3+ note sessions
 - **11 Pitfalls checklist** — common anti-patterns to avoid (in `plugin/instructions.md` and `vault/CLAUDE.md`)
 - **5 template overhauls** — all templates include content structure guidance and new frontmatter fields

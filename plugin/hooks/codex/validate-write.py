@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
 """PostToolUse hook for Codex CLI — Bash command validation.
 
-Checks Bash command output for hard failures (command not found,
-permission denied, missing paths) and non-zero exit codes with
-informative output. Modeled after oh-my-codex's native PostToolUse.
+Checks Bash command output for hard setup failures only: missing
+commands and permission problems. Ordinary command failures, such as
+test failures or missing input files, are left for the agent to review
+from the Bash output without an extra hook block.
 
 Codex only supports additionalContext on context-producing events. This
 tool hook returns decision/reason only so it remains valid even as Codex
@@ -15,21 +16,13 @@ import sys
 
 
 HARD_FAILURE_PATTERNS = re.compile(
-    r"command not found|permission denied|no such file or directory",
+    r"command not found|permission denied",
     re.IGNORECASE,
 )
 
 
 def _safe_string(value):
     return value if isinstance(value, str) else ""
-
-
-def _safe_int(value):
-    if isinstance(value, int):
-        return value
-    if isinstance(value, str) and value.strip().lstrip("-").isdigit():
-        return int(value.strip())
-    return None
 
 
 def _parse_tool_response(raw):
@@ -67,12 +60,10 @@ def main():
     raw_response = payload.get("tool_response")
     parsed = _parse_tool_response(raw_response)
 
-    exit_code = None
     stdout_text = ""
     stderr_text = ""
 
     if parsed:
-        exit_code = _safe_int(parsed.get("exit_code")) or _safe_int(parsed.get("exitCode"))
         stdout_text = _safe_string(parsed.get("stdout", "")).strip()
         stderr_text = _safe_string(parsed.get("stderr", "")).strip()
     else:
@@ -87,16 +78,6 @@ def main():
         output = {
             "decision": "block",
             "reason": "Bash output indicates a command/setup failure that should be fixed before retrying.",
-        }
-        sys.stdout.write(json.dumps(output) + "\n")
-        sys.stdout.flush()
-        sys.exit(0)
-
-    # Check for non-zero exit code with informative output
-    if exit_code is not None and exit_code != 0 and len(combined) > 0:
-        output = {
-            "decision": "block",
-            "reason": "Bash command returned a non-zero exit code but produced useful output that should be reviewed before retrying.",
         }
         sys.stdout.write(json.dumps(output) + "\n")
         sys.stdout.flush()

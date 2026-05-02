@@ -281,13 +281,22 @@ else
   fail "codex/validate: permission denied" "not blocked"
 fi
 
-# Non-zero exit code with output
+# Non-zero exit code with ordinary output
 OUT=$(echo '{"tool_name":"Bash","tool_input":{"command":"pytest"},"tool_response":"{\"exit_code\":1,\"stdout\":\"2 failed, 5 passed\",\"stderr\":\"\"}"}' \
   | python3 "$TEST_DIR/plugin/hooks/codex/validate-write.py" 2>/dev/null)
-if echo "$OUT" | grep -q "block"; then
-  pass "codex/validate: non-zero exit → block for review"
+if [ -z "$OUT" ]; then
+  pass "codex/validate: non-zero exit → silent"
 else
-  fail "codex/validate: non-zero exit" "not blocked"
+  fail "codex/validate: non-zero exit" "unexpected: $OUT"
+fi
+
+# Missing input paths are ordinary command failures, not hook-level setup failures
+OUT=$(echo '{"tool_name":"Bash","tool_input":{"command":"sed -n 1p /tmp/definitely-missing"},"tool_response":"{\"exit_code\":1,\"stdout\":\"\",\"stderr\":\"sed: /tmp/definitely-missing: No such file or directory\"}"}' \
+  | python3 "$TEST_DIR/plugin/hooks/codex/validate-write.py" 2>/dev/null)
+if [ -z "$OUT" ]; then
+  pass "codex/validate: missing path → silent"
+else
+  fail "codex/validate: missing path" "unexpected: $OUT"
 fi
 
 # Success — no output

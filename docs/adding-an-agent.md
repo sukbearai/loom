@@ -16,7 +16,7 @@ Codex-Vault uses 3 lifecycle events. Map them to your agent's equivalent:
 |-----------|------|--------|--------|
 | SessionStart | Agent starts or resumes | `plugin/hooks/claude/session-start.py` | `plugin/hooks/codex/session-start.py` |
 | UserPromptSubmit | User sends a message | `plugin/hooks/claude/classify-message.py` | `plugin/hooks/codex/classify-message.py` |
-| PostToolUse | Validate tool results | Write/Edit note validation via `plugin/hooks/claude/validate-write.py` | Bash failure detection via `plugin/hooks/codex/validate-write.py` |
+| PostToolUse | Validate tool results | Write/Edit note validation via `plugin/hooks/claude/validate-write.py` | Hard Bash setup failure detection via `plugin/hooks/codex/validate-write.py` |
 
 Each agent has its own hook scripts under `plugin/hooks/{claude,codex}/`. The scripts share the same core logic but differ in output format:
 - **Claude Code**: uses `systemMessage` in JSON for terminal display
@@ -32,7 +32,7 @@ All scripts read JSON from stdin. Context-producing hooks output JSON via the `h
 
 **PostToolUse (Claude Write/Edit)**: `{ "session_id": "...", "tool_name": "Write", "tool_input": { "file_path": "/path/to/file.md" } }`
 
-**PostToolUse (Codex Bash)**: `{ "session_id": "...", "hook_event_name": "PostToolUse", "tool_name": "Bash", "tool_input": { "command": "pytest" }, "tool_response": "{\"exit_code\":1,\"stdout\":\"2 failed\",\"stderr\":\"\"}" }`
+**PostToolUse (Codex Bash)**: `{ "session_id": "...", "hook_event_name": "PostToolUse", "tool_name": "Bash", "tool_input": { "command": "npm install" }, "tool_response": "{\"exit_code\":1,\"stdout\":\"npm ERR! command not found: node\",\"stderr\":\"\"}" }`
 
 Codex also includes `hook_event_name`; Codex scripts ignore payloads for other events so a stale or misregistered hook does not return invalid output.
 
@@ -60,6 +60,8 @@ Codex PostToolUse validation returns only event-supported control fields:
 }
 ```
 
+It should only block hard setup failures such as `command not found` and `permission denied`. It should not block ordinary non-zero command results, test failures, or missing input files.
+
 ### Stderr (user feedback)
 
 All hooks print brief status to stderr for user feedback (visible when running hooks manually or in verbose mode). This is informational only — agents may or may not pass stderr through to the terminal.
@@ -82,4 +84,4 @@ After setup, verify:
 2. Check that session context is injected (North Star, active work, etc.)
 3. Say "I decided to use PostgreSQL" — check that a DECISION hint appears
 4. In Claude Code, create a note — check that validate-write checks frontmatter
-5. In Codex CLI, run a failing Bash command — check that validate-write reports a block reason without `additionalContext`
+5. In Codex CLI, run a hard setup-failing Bash command — check that validate-write reports a block reason without `additionalContext`
